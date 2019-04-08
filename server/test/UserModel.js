@@ -357,7 +357,7 @@ describe('Users Model', () => {
     });
 
 
-    describe("generateRanmPassword()", () => {
+    describe("generateRandomPassword()", () => {
         it("should return String", () => {
             const password = userModel.generateRandompassword();
 

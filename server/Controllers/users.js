@@ -104,8 +104,8 @@ router.patch('/auth/me', validateToken, (req, res) => {
 });
 
 router.delete('/auth/:id', validateToken, (req, res) => {
+  console.log(req.user)
   if(req.user.isAdmin){
-    
     const user = userModel.deleteUser(req.params.id);
     if(user){
       return res.status(200).json({

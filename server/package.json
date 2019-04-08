@@ -8,22 +8,11 @@
     "dev-start": "babel-watch app.js",
     "start": "nodemon --exec babel-node app.js",
     "lint": "./node_modules/.bin/eslint app.js",
-    "test": "nyc mocha  --require @babel/register --require @babel/polyfill -w --timeout 5000",
-    "coverage": "nyc --reporter=text  --reporter=html mocha  --require @babel/register --require @babel/polyfill",
+    "test": "nyc mocha  --require @babel/register --require @babel/polyfill --exit --timeout 5000",
+    "coverage": "cross-env NODE_ENV=test nyc _mocha report --reporter=text-lcov | coveralls --require @babel/register --require @babel/polyfill",
     "cover": "nyc report --reporter=text-lcov | coveralls",
     "me": "cross-env NODE_ENV=test nyc mocha ./test/*.js"
   },
-    "nyc": {
-      "require": [
-        "@babel/register"
-      ],
-      "reporter": [
-        "lcov",
-        "text"
-      ],
-      "sourceMap": false,
-      "instrument": false
-    },
 
   "author": "",
   "license": "ISC",
@@ -62,3 +51,4 @@
     "uuid": "^3.3.2"
   }
 }
+

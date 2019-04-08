@@ -9,23 +9,33 @@ chai.use(chaiHttp);
 
 
 describe("User Controllers", () => {
-    let user;
-    let token;
+    let user, user2;
+    let token, token2;
     beforeEach(async () => {
         userModel.usersDb = []
         const client = {
             firstName: "John",
             lastName: "Doe",
-            email: "mike@gmail.com",
+            email: "staff@gmail.com",
             type: "staff",
             password: "password",
             isAdmin: true
         }
+        const client2 = {
+            firstName: "Jane",
+            lastName: "Doe",
+            email: "cashier@gmail.com",
+            type: "staff",
+            password: "password",
+            isAdmin: false
+        }
+        user2 = await userModel.createUser(client2);
         user = await userModel.createUser(client);
-        token = await userModel.generateToken(user.email)
+        token = await userModel.generateToken(user.email);
+        token2 = await userModel.generateToken(user2.email)
     });
 
-    afterEach(  () => {
+    after(  () => {
         user = "";
         token = ""
     })
@@ -155,7 +165,7 @@ describe("User Controllers", () => {
             chai.request(server)
             .post('/api/v1/users/auth/login')
             .send({
-                "email": "mike@gmail.com",
+                "email": "staff@gmail.com",
                 "password": "password"
             })
             .end((err, res) => {
@@ -221,7 +231,7 @@ describe("User Controllers", () => {
             chai.request(server)
             .post('/api/v1/users/auth/reset')
             .send({
-                "email": "mike@gmail.com",
+                "email": "staff@gmail.com",
             })
             .end((err, res) => {
                 
@@ -324,7 +334,7 @@ describe("User Controllers", () => {
             .delete('/api/v1/users/auth/' + user.id)
             .set("x-access-token", token)
             .end((err, res) => {
-
+              
                 assert.isNotEmpty(res.body, "res.body shouldn't be empty");
                 assert.equal(res.body.status, 200, "Status should be 200");
                 assert.isString(res.body.message, "message property should be string");
@@ -336,9 +346,21 @@ describe("User Controllers", () => {
             .delete('/api/v1/users/auth/' + 0)
             .set("x-access-token", token)
             .end((err, res) => {
-
+            
                 assert.isNotEmpty(res.body, "res.body shouldn't be empty");
                 assert.equal(res.body.status, 400, "Status should be 400");
+                assert.isString(res.body.error, "message property should be string");
+            });
+        });
+
+        it("Should have status of 400 for invalid id", () => {
+            chai.request(server)
+            .delete('/api/v1/users/auth/' + user.id)
+            .set("x-access-token", token2)
+            .end((err, res) => {
+                
+                assert.isNotEmpty(res.body, "res.body shouldn't be empty");
+                assert.equal(res.body.status, 403, "Status should be 400");
                 assert.isString(res.body.error, "message property should be string");
             });
         });
